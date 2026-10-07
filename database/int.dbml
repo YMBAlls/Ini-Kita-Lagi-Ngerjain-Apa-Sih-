@@ -1,0 +1,17 @@
+Table rekening {
+  id int [pk, increment]
+  nama varchar
+  saldo decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+
+
+
+hh
+mita
+mita
+
+
+

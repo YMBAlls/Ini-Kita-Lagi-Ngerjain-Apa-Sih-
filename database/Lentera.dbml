@@ -1,0 +1,178 @@
+Project Perpustakaan {
+  database_type: "MySQL"
+  Note: "Database Sistem Informasi Perpustakaan"
+}
+
+Table users {
+  id_user int [pk, increment]
+  nama varchar(100) [not null]
+  email varchar(100) [unique]
+  password varchar(255) [not null]
+  no_telepon varchar(20)
+  alamat text
+  role enum('admin', 'petugas', 'anggota') [not null]
+  status enum('aktif', 'nonaktif') [default: 'aktif']
+  created_at datetime
+  updated_at datetime
+}
+
+Table kategori {
+  id_kategori int [pk, increment]
+  nama_kategori varchar(100) [not null, unique]
+  deskripsi text
+}
+
+Table genre {
+  id_genre int [pk, increment]
+  nama_genre varchar(100) [not null, unique]
+  deskripsi text
+}
+
+Table batas_usia {
+  id_batas_usia int [pk, increment]
+  kode varchar(10) [not null, unique]
+  keterangan varchar(100) [not null]
+  usia_minimal int
+  usia_maksimal int
+}
+
+Table penulis {
+  id_penulis int [pk, increment]
+  nama_penulis varchar(150) [not null]
+  biografi text
+  negara_asal varchar(100)
+}
+
+Table penerbit {
+  id_penerbit int [pk, increment]
+  nama_penerbit varchar(150) [not null]
+  alamat text
+  email varchar(100)
+  no_telepon varchar(20)
+}
+
+Table rak {
+  id_rak int [pk, increment]
+  kode_rak varchar(20) [not null, unique]
+  nama_rak varchar(100) [not null]
+  lokasi varchar(100)
+  keterangan text
+}
+
+Table buku {
+  id_buku int [pk, increment]
+  isbn varchar(20) [unique]
+  judul varchar(255) [not null]
+  tahun_terbit year
+  bahasa varchar(50)
+  jumlah_halaman int
+  sinopsis text
+  id_kategori int [not null]
+  id_genre int [not null]
+  id_batas_usia int [not null]
+  id_penerbit int
+  id_rak int
+  created_at datetime
+  updated_at datetime
+}
+
+Table buku_penulis {
+  id_buku int [not null]
+  id_penulis int [not null]
+
+  indexes {
+    (id_buku, id_penulis) [pk]
+  }
+}
+
+Table eksemplar_buku {
+  id_eksemplar int [pk, increment]
+  id_buku int [not null]
+  kode_eksemplar varchar(30) [not null, unique]
+  kondisi enum('baik', 'rusak_ringan', 'rusak_berat', 'hilang') [default: 'baik']
+  status enum('tersedia', 'dipinjam', 'dipesan', 'hilang', 'diperbaiki') [default: 'tersedia']
+  tanggal_masuk date
+  harga_beli decimal(12,2)
+}
+
+Table peminjaman {
+  id_peminjaman int [pk, increment]
+  id_user int [not null]
+  tanggal_pinjam date [not null]
+  tanggal_jatuh_tempo date [not null]
+  tanggal_pengembalian date
+  status enum('dipinjam', 'dikembalikan', 'terlambat', 'hilang') [default: 'dipinjam']
+  denda decimal(12,2) [default: 0]
+  catatan text
+}
+
+Table detail_peminjaman {
+  id_detail int [pk, increment]
+  id_peminjaman int [not null]
+  id_eksemplar int [not null]
+  tanggal_kembali date
+  kondisi_kembali enum('baik', 'rusak_ringan', 'rusak_berat', 'hilang')
+  denda decimal(12,2) [default: 0]
+}
+
+Table reservasi {
+  id_reservasi int [pk, increment]
+  id_user int [not null]
+  id_buku int [not null]
+  tanggal_reservasi date [not null]
+  tanggal_kadaluarsa date
+  status enum('menunggu', 'tersedia', 'diambil', 'dibatalkan', 'kadaluarsa') [default: 'menunggu']
+}
+
+Table ulasan_buku {
+  id_ulasan int [pk, increment]
+  id_user int [not null]
+  id_buku int [not null]
+  rating int [not null]
+  komentar text
+  created_at datetime
+}
+
+Table denda {
+  id_denda int [pk, increment]
+  id_detail int [not null]
+  jenis_denda enum('terlambat', 'rusak', 'hilang')
+  jumlah decimal(12,2) [not null]
+  status_pembayaran enum('belum_bayar', 'lunas') [default: 'belum_bayar']
+  tanggal_denda date
+  tanggal_bayar date
+}
+
+// Relationships
+
+Ref: buku.id_kategori > kategori.id_kategori
+
+Ref: buku.id_genre > genre.id_genre
+
+Ref: buku.id_batas_usia > batas_usia.id_batas_usia
+
+Ref: buku.id_penerbit > penerbit.id_penerbit
+
+Ref: buku.id_rak > rak.id_rak
+
+Ref: buku_penulis.id_buku > buku.id_buku
+
+Ref: buku_penulis.id_penulis > penulis.id_penulis
+
+Ref: eksemplar_buku.id_buku > buku.id_buku
+
+Ref: peminjaman.id_user > users.id_user
+
+Ref: detail_peminjaman.id_peminjaman > peminjaman.id_peminjaman
+
+Ref: detail_peminjaman.id_eksemplar > eksemplar_buku.id_eksemplar
+
+Ref: reservasi.id_user > users.id_user
+
+Ref: reservasi.id_buku > buku.id_buku
+
+Ref: ulasan_buku.id_user > users.id_user
+
+Ref: ulasan_buku.id_buku > buku.id_buku
+
+Ref: denda.id_detail > detail_peminjaman.id_detail
