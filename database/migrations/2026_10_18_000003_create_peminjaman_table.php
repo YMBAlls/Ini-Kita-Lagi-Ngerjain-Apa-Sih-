@@ -11,11 +11,11 @@ return new class extends Migration {
     {
         Schema::create('peminjaman', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('anggota_id');
+            $table->unsignedInteger('anggota_id');
             $table->foreign('anggota_id')->references('id')->on('anggota');
-            $table->integer('buku_id');
+            $table->unsignedInteger('buku_id');
             $table->foreign('buku_id')->references('id')->on('buku');
-            $table->date('tanggal_pinjam')->default(DB::raw('now()'));
+            $table->date('tanggal_pinjam')->default(DB::raw('(CURRENT_DATE)'));
             $table->date('tanggal_jatuh_tempo');
             $table->date('tanggal_kembali')->nullable();
             $table->string('status', 20)->default('dipinjam');

@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('email', 150)->nullable()->unique();
             $table->string('no_telepon', 20)->nullable();
             $table->text('alamat')->nullable();
-            $table->date('tanggal_daftar')->default(DB::raw('now()'));
+            $table->date('tanggal_daftar')->default(DB::raw('(CURRENT_DATE)'));
 
         });
     }

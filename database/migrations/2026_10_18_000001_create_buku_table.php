@@ -11,7 +11,7 @@ return new class extends Migration {
     {
         Schema::create('buku', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('kategori_id');
+            $table->unsignedInteger('kategori_id');
             $table->foreign('kategori_id')->references('id')->on('kategori');
             $table->string('judul', 255);
             $table->string('penulis', 150);
