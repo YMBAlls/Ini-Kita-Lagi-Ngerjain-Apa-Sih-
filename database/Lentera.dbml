@@ -1,6 +1,6 @@
-Project perpustakaan {
-  database_type: 'PostgreSQL'
-  Note: 'Skema sederhana sistem peminjaman buku perpustakaan'
+Project Lentera {
+  database_type: 'MySQL'
+  Note: 'Skema toko buku ditambahkan tanpa menghapus tabel perpustakaan yang sudah ada'
 }
 
 Table kategori {
@@ -37,4 +37,45 @@ Table peminjaman {
   tanggal_jatuh_tempo date [not null]
   tanggal_kembali date [note: 'NULL = belum dikembalikan']
   status varchar(20) [not null, default: 'dipinjam', note: 'dipinjam / dikembalikan / terlambat']
+}
+
+Table pembeli {
+  id integer [pk, increment]
+  nama varchar(150) [not null]
+  email varchar(150) [unique]
+  no_telepon varchar(20)
+  alamat text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table produk_toko {
+  id integer [pk, increment]
+  buku_id integer [not null, unique, ref: > buku.id]
+  harga decimal(12,2) [not null]
+  stok integer [not null, default: 0, note: 'Stok jual terpisah dari stok perpustakaan pada buku']
+  aktif boolean [not null, default: true]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table pesanan {
+  id integer [pk, increment]
+  nomor_pesanan varchar(30) [not null, unique]
+  pembeli_id integer [not null, ref: > pembeli.id]
+  status varchar(30) [not null, default: 'menunggu_pembayaran']
+  alamat_pengiriman text [not null]
+  tanggal_pesanan timestamp [not null, default: `now()`]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table detail_pesanan {
+  id integer [pk, increment]
+  pesanan_id integer [not null, ref: > pesanan.id]
+  produk_toko_id integer [not null, ref: > produk_toko.id]
+  jumlah integer [not null]
+  harga_satuan decimal(12,2) [not null]
+  created_at timestamp
+  updated_at timestamp
 }
